@@ -5,12 +5,26 @@ N-Grams
 Algorithms to apply when building model:
 Laplace smoothing
 log-probabilities?
+
+Hamilton: 51 texts
+Jay: 5 texts
+Madison: 14 texts
+Total Known Author Texts: 70 texts
+Disputed: 15 texts
 '''
 
 import sys
 import pdb
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
+
+# priori probability of each author
+hamilton_prob = 51/70
+jay_prob = 5/70
+madison_prob = 14/70
+
+# need to find the num of all the possible words (from all the texts in the Hamilton, Jay, Madison, and Disputed texts)
+possible_words = 1000
 
 def main(argv, argc):
     if (argc < 3):
@@ -40,16 +54,16 @@ def remove_stop_words(contents):
 
 # features: string list of features
 # text: string list of the text
-# num_of_authors: num of tags (authors)
-def bayes_theorem_with_no_divisor(features, text, num_of_authors):
+# author_prob: priori probability of text being the current author's
+def bayes_theorem_with_no_divisor(features, text, author_prob):
     text_length = len(text)
     cond_prob = 1
-    # find the conditional probability with each feature using bayes' theorem
+    # find the conditional probability with each feature using bayes' theorem that applies Laplace smoothing
     # multiply each feature's probability with each other
     for feature in features:
         feature_count = text.count(feature)
-        # Bayes' theorem
-        cond_prob = cond_prob * ((feature_count/text_length) * num_of_authors)
+        # Bayes' theorem applied with Laplace smoothing
+        cond_prob = cond_prob * (((feature_count+1)/(text_length + possible_words)) * author_prob)
     
     return cond_prob
 
