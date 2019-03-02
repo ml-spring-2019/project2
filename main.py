@@ -1,3 +1,12 @@
+'''
+Technique we may do:
+N-Grams
+
+Algorithms to apply when building model:
+Laplace smoothing
+log-probabilities?
+'''
+
 import sys
 import pdb
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -29,6 +38,20 @@ def remove_stop_words(contents):
 
     return filtered
 
+# features: string list of features
+# text: string list of the text
+# num_of_authors: num of tags (authors)
+def bayes_theorem_with_no_divisor(features, text, num_of_authors):
+    text_length = len(text)
+    cond_prob = 1
+    # find the conditional probability with each feature using bayes' theorem
+    # multiply each feature's probability with each other
+    for feature in features:
+        feature_count = text.count(feature)
+        # Bayes' theorem
+        cond_prob = cond_prob * ((feature_count/text_length) * num_of_authors)
+    
+    return cond_prob
 
 def file_IO(argv):
     params = {
