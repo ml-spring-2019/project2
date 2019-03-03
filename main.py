@@ -78,16 +78,20 @@ def remove_stop_words(contents):
 # text: string list of the text
 # author_prob: priori probability of text being the current author's
 def bayes_theorem_with_no_divisor(features, text, author_prob):
-    pdb.set_trace()
     text_length = float(len(text))
-    cond_prob = 1
+    cond_prob = 1.0
+    smoothing_value = 1.0
     # find the conditional probability with each feature using bayes' theorem that applies Laplace smoothing
     # multiply each feature's probability with each other
     for feature in features:
         feature_count = float(text.count(feature))
         # Bayes' theorem applied with Laplace smoothing
-        cond_prob = cond_prob * (((feature_count+1.0)/(text_length + possible_words)) * author_prob)
-    
+
+        numerator = float(feature_count + smoothing_value)
+        denominator = float(text_length + possible_words)
+
+        cond_prob *= (numerator / denominator) * author_prob
+        
     return cond_prob
 
 def file_IO(argv):
