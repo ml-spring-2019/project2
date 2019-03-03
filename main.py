@@ -17,14 +17,16 @@ import sys
 import pdb
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk import ngrams
 
 # priori probability of each author
-hamilton_prob = 51/70
-jay_prob = 5/70
-madison_prob = 14/70
+hamilton_prob = 51.0/70.0
+jay_prob = 5.0/70.0
+madison_prob = 14.0/70.0
 
 # need to find the num of all the possible words (from all the texts in the Hamilton, Jay, Madison, and Disputed texts)
-possible_words = 1000
+possible_words = 1000.0
 
 def main(argv, argc):
     if (argc < 3):
@@ -32,14 +34,34 @@ def main(argv, argc):
         return 1
     training_file, testing_file = file_IO(argv)
 
-    training_contents = file_data_to_string(training_file)
-    testing_contents = file_data_to_string(testing_file)
+    training_set = get_word_set(training_file)
+    testing_set = get_word_set(testing_file)
 
-    filtered_training = remove_stop_words(training_contents)
-    filtered_testing = remove_stop_words(testing_contents)
-
+    bayes_theorem_with_no_divisor(["to"], training_set, jay_prob)
 
     pdb.set_trace()
+
+
+def get_word_set(file):
+    contents = file_data_to_string(file)
+    filtered_stop = remove_stop_words(contents)
+    stem = stem_words(filtered_stop)
+    lower = lower_case_words(stem)
+    return lower
+
+def lower_case_words(words):
+    result = []
+    for w in words:
+        result.append(w.lower())
+    return result
+
+def stem_words(words):
+    ps = PorterStemmer()
+    result = []
+    for w in words:
+        result.append(ps.stem(w))
+    return result
+
 
 def remove_stop_words(contents):
     words = word_tokenize(contents)
@@ -56,14 +78,15 @@ def remove_stop_words(contents):
 # text: string list of the text
 # author_prob: priori probability of text being the current author's
 def bayes_theorem_with_no_divisor(features, text, author_prob):
-    text_length = len(text)
+    pdb.set_trace()
+    text_length = float(len(text))
     cond_prob = 1
     # find the conditional probability with each feature using bayes' theorem that applies Laplace smoothing
     # multiply each feature's probability with each other
     for feature in features:
-        feature_count = text.count(feature)
+        feature_count = float(text.count(feature))
         # Bayes' theorem applied with Laplace smoothing
-        cond_prob = cond_prob * (((feature_count+1)/(text_length + possible_words)) * author_prob)
+        cond_prob = cond_prob * (((feature_count+1.0)/(text_length + possible_words)) * author_prob)
     
     return cond_prob
 
