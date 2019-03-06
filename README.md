@@ -17,7 +17,9 @@ python main.py federalist_papers/Hamilton federalist_papers/Jay federalist_paper
 We used stop word and stem word filtering to elimate common words from the training and testing datasets.  We also converted all characters to lowercase for streamlined string comparisons.
 
 ## Trained Features
+The features the Naive Bayes model was trained over is located in the `features.txt` file. 
 
 ## Rejected Features / Preprocessing Techniques
+
 
 ## Overall Accuracy of Model
