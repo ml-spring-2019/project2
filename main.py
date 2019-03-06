@@ -139,10 +139,10 @@ def file_IO(argv):
     training_set = [[],[],[]]
     testing_set = []
     i = 0
+    pdb.set_trace()
     for directory in author_directories:
         for file in directory:
             text_file = open(file, "r")
-#            pdb.set_trace()
             if i < len(author_directories)-1:
                 training_set[i].append(preprocessing(text_file))
             else:
