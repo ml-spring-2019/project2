@@ -31,45 +31,51 @@ madison_prob = 14.0/70.0
 possible_words = 0
 
 def main(argv, argc):
-    if (argc != 5):
-#        print("Usage: python main.py <known-author-dir> <unknown-author-dir>\n")
-        print("python main.py <Hamilton-dir> <Jay-dir> <Madison-dir> <Disputed-dir>")
+    if (argc < 6):
+        print("python main.py <Hamilton-dir> <Jay-dir> <Madison-dir> <Disputed-dir> <features-list>")
         return 1
-#    training_set, testing_set = file_IO(argv)
 
 #   training_set: [[hamilton set] [jay set] [madison set]]
 #   testing_set: [disputed set]
     training_set = file_IO(argv)
 
-    bayes_scores = {}
 
 #   features: list of features
-    features = raw_input("What features do you want to use for determining disputed texts? (separate words and symbols by \"+\")")
-    features = features.split("+")
+    features = get_features(argv[5])
+
+    bayes_scores = {}
 
     print("Running Bayes Theorem with Hamilton Probability...")
-    bayes_scores["hamilton"] = bayes_theorem_with_no_divisor(features, training_set[0], hamilton_prob)
+    bayes_scores["Hamilton"] = bayes_theorem_with_no_divisor(features, training_set[0], hamilton_prob)
 
     print("Running Bayes Theorem with Jay Probability...")
-    bayes_scores["jay"] = bayes_theorem_with_no_divisor(features, training_set[1], jay_prob)
+    bayes_scores["Jay"] = bayes_theorem_with_no_divisor(features, training_set[1], jay_prob)
 
     print("Running Bayes Theorem with Madison Probability...")
-    bayes_scores["madison"] = bayes_theorem_with_no_divisor(features, training_set[2], madison_prob)
+    bayes_scores["Madison"] = bayes_theorem_with_no_divisor(features, training_set[2], madison_prob)
 
     print_results(bayes_scores)
 
-    pdb.set_trace()
+
+def get_features(filename):
+    features = []
+    features_file = open(filename, 'r')
+    for line in features_file.readlines():
+        f = line.rstrip("\n")
+        features.append(f)
+    return features
+
 
 def print_results(bayes_scores):
     print("Bayes scores:")
     for k in bayes_scores.keys():
         print(k + ":     \t" + str(bayes_scores[k]))
 
-    print("The author of the unknown classification is probably " + get_author_with_highest_prob(bayes_scores) + ".")
+    print("The author of the unknown classification is probably: " + get_author_with_highest_prob(bayes_scores) + ".")
 
 
 def get_author_with_highest_prob(bayes_scores):
-    highest_prob = max([bayes_scores["hamilton"], bayes_scores["jay"], bayes_scores["madison"]])
+    highest_prob = max([bayes_scores["Hamilton"], bayes_scores["Jay"], bayes_scores["Madison"]])
     for k in bayes_scores.keys():
         if bayes_scores[k] == highest_prob:
             return k
@@ -126,6 +132,7 @@ def bayes_theorem_with_no_divisor(features, text, author_prob):
         numerator = float(feature_count + smoothing_value)
         denominator = float(text_length + possible_words)
 
+        # using logs so that it doesn't underflow
         cond_prob += math.log((numerator / denominator) * author_prob)
 
     return cond_prob
@@ -133,7 +140,7 @@ def bayes_theorem_with_no_divisor(features, text, author_prob):
 def file_IO(argv):
     print("Performing file I/O...")
     author_directories = []
-    for i in range(1, len(argv)):
+    for i in range(1, len(argv) - 1):
         author_directories.append(glob.glob(argv[i]+"/*.txt"))
 
     training_set = [[],[],[]]
