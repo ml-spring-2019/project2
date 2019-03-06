@@ -23,16 +23,15 @@ from nltk.stem import PorterStemmer
 from nltk import ngrams
 
 # priori probability of each author
-hamilton_prob = 51.0/70.0
-jay_prob = 5.0/70.0
-madison_prob = 14.0/70.0
+hamilton_prob = 20.0/34.0
+madison_prob = 14.0/34.0
 
 # need to find the num of all the possible words (from all the texts in the Hamilton, Jay, Madison, and Disputed texts)
 possible_words = 0
 
 def main(argv, argc):
-    if (argc < 6):
-        print("python main.py <Hamilton-dir> <Jay-dir> <Madison-dir> <Disputed-dir> <features-list>")
+    if (argc != 5):
+        print("python main.py <Hamilton-dir> <Madison-dir> <Disputed-dir> <features-list>")
         return 1
 
 #   training_set: [[hamilton set] [jay set] [madison set]]
@@ -41,15 +40,12 @@ def main(argv, argc):
 
 
 #   features: list of features
-    features = get_features(argv[5])
+    features = get_features(argv[4])
 
     bayes_scores = {}
 
     print("Running Bayes Theorem with Hamilton Probability...")
     bayes_scores["Hamilton"] = bayes_theorem_with_no_divisor(features, training_set[0], hamilton_prob)
-
-    print("Running Bayes Theorem with Jay Probability...")
-    bayes_scores["Jay"] = bayes_theorem_with_no_divisor(features, training_set[1], jay_prob)
 
     print("Running Bayes Theorem with Madison Probability...")
     bayes_scores["Madison"] = bayes_theorem_with_no_divisor(features, training_set[2], madison_prob)
@@ -75,7 +71,7 @@ def print_results(bayes_scores):
 
 
 def get_author_with_highest_prob(bayes_scores):
-    highest_prob = max([bayes_scores["Hamilton"], bayes_scores["Jay"], bayes_scores["Madison"]])
+    highest_prob = max([bayes_scores["Hamilton"], bayes_scores["Madison"]])
     for k in bayes_scores.keys():
         if bayes_scores[k] == highest_prob:
             return k
