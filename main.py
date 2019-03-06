@@ -14,6 +14,7 @@ Disputed: 15 texts
 '''
 
 import sys
+import glob
 import pdb
 import math
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -30,21 +31,30 @@ madison_prob = 14.0/70.0
 possible_words = 1000.0
 
 def main(argv, argc):
-    if (argc < 3):
-        print("Usage: python main.py <known-author-dir> <unknown-author-dir>")
+    if (argc != 5):
+#        print("Usage: python main.py <known-author-dir> <unknown-author-dir>\n")
+        print("python main.py <Hamilton-dir> <Jay-dir> <Madison-dir> <Disputed-dir>")
         return 1
+#    training_set, testing_set = file_IO(argv)
+
+#   training_set: [[hamilton set] [jay set] [madison set]]
+#   testing_set: [disputed set]
     training_set, testing_set = file_IO(argv)
 
     bayes_scores = {}
 
+#   features: list of features
+    features = input("What features do you want to use for determining disputed texts? (separate words and symbols by \"+\")")
+    features = features.split("+")
+
     print("Running Bayes Theorem with Hamilton Probability...")
-    bayes_scores["hamilton"] = bayes_theorem_with_no_divisor(testing_set, training_set, hamilton_prob)
+    bayes_scores["hamilton"] = bayes_theorem_with_no_divisor(features, testing_set, training_set, hamilton_prob)
 
     print("Running Bayes Theorem with Jay Probability...")
-    bayes_scores["jay"] = bayes_theorem_with_no_divisor(testing_set, training_set, jay_prob)
+    bayes_scores["jay"] = bayes_theorem_with_no_divisor(features, testing_set, training_set, jay_prob)
 
     print("Running Bayes Theorem with Madison Probability...")
-    bayes_scores["madison"] = bayes_theorem_with_no_divisor(testing_set, training_set, madison_prob)
+    bayes_scores["madison"] = bayes_theorem_with_no_divisor(features, testing_set, training_set, madison_prob)
 
     print_results(bayes_scores)
 
@@ -79,6 +89,7 @@ def lower_case_words(words):
         result.append(w.lower())
     return result
 
+
 def stem_words(words):
     ps = PorterStemmer()
     result = []
@@ -91,6 +102,7 @@ def remove_stop_words(contents):
     words = word_tokenize(contents)
     stop_words = set(stopwords.words('english'))
 
+#    pdb.set_trace()
     filtered = []
     for w in words:
         if w not in stop_words:
@@ -120,7 +132,27 @@ def bayes_theorem_with_no_divisor(features, text, author_prob):
 
 def file_IO(argv):
     print("Performing file I/O...")
+    author_directories = []
+    for i in range(1, len(argv)):
+        author_directories.append(glob.glob(argv[i]+"/*.txt"))
 
+    training_set = [[],[],[]]
+    testing_set = []
+    i = 0
+    for directory in author_directories:
+        for file in directory:
+            text_file = open(file, "r")
+#            pdb.set_trace()
+            if i < len(author_directories)-1:
+                training_set[i].append(preprocessing(text_file))
+            else:
+                testing_set.append(preprocessing(text_file))
+        i += 1
+
+    pdb.set_trace()
+
+    return training_set, testing_set
+'''
     params = {
         "training_dir": 1,
         "testing_dir": 2
@@ -133,8 +165,10 @@ def file_IO(argv):
     files_not_found = 0
     files_found_training = 0
     files_found_testing = 0
+    pdb.set_trace()
 
-    for i in range(0, 100):
+
+        for i in range(0, 100):
         try:
             training_filename = argv[params["training_dir"]] + str(i) + ".txt"
             training_file = open(training_filename, "r")
@@ -150,14 +184,14 @@ def file_IO(argv):
         except IOError:
             files_not_found += 1
 
+
     if files_found_training == 0:
         print("No files found for building the training set. Please check if the directory is correct and files range from 0.txt to 100.txt.")
         exit(1)
     elif files_found_testing == 0:
         print("No files found for building the testing set. Please check if the directory is correct and files range from 0.txt to 100.txt.")
         exit(1)
-
-    return training_set, testing_set
+'''
 
 
 def file_data_to_string(file):
