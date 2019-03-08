@@ -18,7 +18,7 @@ Each word in the filtered text then is stemmed using the nltk.stem.PorterStemmer
 Finally, each word in the resulting text is lower-cased.
 
 ## Trained Features
-The features the Naive Bayes model was trained over is located in the `features.txt` file. 
+The features the Naive Bayes model was trained over is located in the `features.txt` file. We used one of the files from the disputed set and excluded it from the testing set.
 
 ## Rejected Features / Pre-Processing Techniques
 For pre-processing, we decided not to use N-Grams in our project. The results we got were inaccurate when initially using N-Grams due to our program never returning any true string comparisons between the features and the data set.
