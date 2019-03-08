@@ -30,36 +30,36 @@ madison_prob = 14.0/34.0
 possible_words = 0
 
 def main(argv, argc):
-    if (argc != 5):
-        print("python main.py <Hamilton-dir> <Madison-dir> <Disputed-dir> <features-list>")
+    if (argc != 4):
+        print("python main.py <Hamilton-dir> <Madison-dir> <Disputed-dir>")
         return 1
 
 #   training_set: [[hamilton set] [jay set] [madison set]]
 #   testing_set: [disputed set]
-    training_set = file_IO(argv)
+    training_set, testing_set = file_IO(argv)
 
 
-#   features: list of features
-    features = get_features(argv[4])
-
+#   testing_set: list of testing_set
+#   testing_set = get_testing_set(argv[4])
+#    testing_set = preprocessing(argv[4])
     bayes_scores = {}
 
     print("Running Bayes Theorem with Hamilton Probability...")
-    bayes_scores["Hamilton"] = bayes_theorem_with_no_divisor(features, training_set[0], hamilton_prob)
+    bayes_scores["Hamilton"] = bayes_theorem_with_no_divisor(testing_set, training_set[0], hamilton_prob)
 
     print("Running Bayes Theorem with Madison Probability...")
-    bayes_scores["Madison"] = bayes_theorem_with_no_divisor(features, training_set[2], madison_prob)
+    bayes_scores["Madison"] = bayes_theorem_with_no_divisor(testing_set, training_set[1], madison_prob)
 
     print_results(bayes_scores)
 
 
-def get_features(filename):
-    features = []
-    features_file = open(filename, 'r')
-    for line in features_file.readlines():
+def get_testing_set(filename):
+    testing_set = []
+    testing_set_file = open(filename, 'r')
+    for line in testing_set_file.readlines():
         f = line.rstrip("\n")
-        features.append(f)
-    return features
+        testing_set.append(f)
+    return testing_set
 
 
 def print_results(bayes_scores):
@@ -112,16 +112,16 @@ def remove_stop_words(contents):
 
     return filtered
 
-# features: string list of features
+# testing_set: string list of testing_set
 # text: string list of the text
 # author_prob: priori probability of text being the current author's
-def bayes_theorem_with_no_divisor(features, text, author_prob):
+def bayes_theorem_with_no_divisor(testing_set, text, author_prob):
     text_length = float(len(text))
     cond_prob = 0.0
     smoothing_value = 1.0
     # find the conditional probability with each feature using bayes' theorem that applies Laplace smoothing
     # multiply each feature's probability with each other
-    for feature in features:
+    for feature in testing_set:
         feature_count = float(text.count(feature))
         # Bayes' theorem applied with Laplace smoothing
 
@@ -129,17 +129,19 @@ def bayes_theorem_with_no_divisor(features, text, author_prob):
         denominator = float(text_length + possible_words)
 
         # using logs so that it doesn't underflow
-        cond_prob += math.log((numerator / denominator) * author_prob)
+        cond_prob += math.log((numerator / denominator))
 
+    cond_prob += math.log(author_prob)
+    
     return cond_prob
 
 def file_IO(argv):
     print("Performing file I/O...")
     author_directories = []
-    for i in range(1, len(argv) - 1):
+    for i in range(1, len(argv)):
         author_directories.append(glob.glob(argv[i]+"/*.txt"))
 
-    training_set = [[],[],[]]
+    training_set = [[],[]]
     testing_set = []
     i = 0
 
@@ -153,6 +155,7 @@ def file_IO(argv):
         i += 1
 
     distinct_words = list(set(testing_set))
+
     for collection in training_set:
         distinct_words += list(set(collection))
 
@@ -161,7 +164,7 @@ def file_IO(argv):
     global possible_words
     possible_words += len(distinct_words)
 
-    return training_set
+    return training_set, testing_set
 
 
 def file_data_to_string(file):
