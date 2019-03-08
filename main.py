@@ -162,46 +162,6 @@ def file_IO(argv):
     possible_words += len(distinct_words)
 
     return training_set
-'''
-    params = {
-        "training_dir": 1,
-        "testing_dir": 2
-    }
-    training_file = None
-    testing_file = None
-
-    training_set = []
-    testing_set = []
-    files_not_found = 0
-    files_found_training = 0
-    files_found_testing = 0
-    pdb.set_trace()
-
-
-        for i in range(0, 100):
-        try:
-            training_filename = argv[params["training_dir"]] + str(i) + ".txt"
-            training_file = open(training_filename, "r")
-            training_set += preprocessing(training_file)
-            files_found_training += 1
-        except IOError:
-            files_not_found += 1
-        try:
-            testing_filename = argv[params["testing_dir"]] + str(i) + ".txt"
-            testing_file = open(testing_filename, "r")
-            testing_set += preprocessing(testing_file)
-            files_found_testing += 1
-        except IOError:
-            files_not_found += 1
-
-
-    if files_found_training == 0:
-        print("No files found for building the training set. Please check if the directory is correct and files range from 0.txt to 100.txt.")
-        exit(1)
-    elif files_found_testing == 0:
-        print("No files found for building the testing set. Please check if the directory is correct and files range from 0.txt to 100.txt.")
-        exit(1)
-'''
 
 
 def file_data_to_string(file):
