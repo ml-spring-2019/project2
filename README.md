@@ -1,11 +1,10 @@
 # Project 2: Author Recognition
 
 ## Getting Started
-`main.py` takes in 4 arguments:
-1. Directory of Hamilton texts.
-2. Directory of Madison texts.
-3. Directory of Disputed texts.
-4. List of features as a .txt file.
+`main.py` takes in 3 arguments:
+1. Directory of Hamilton texts: federalist_papers/Hamilton
+2. Directory of Madison texts: federalist_papers/Madison
+3. Directory of Disputed texts: federalist_papers/Disputed
 
 Example script:
 ```
@@ -18,13 +17,14 @@ Each word in the filtered text then is stemmed using the nltk.stem.PorterStemmer
 Finally, each word in the resulting text is lower-cased.
 
 ## Trained Features
-The features the Naive Bayes model was trained over is located in the `features.txt` file. We used one of the files from the disputed set and excluded it from the testing set.
+The features the Naive Bayes model was trained over are
+~ 'federalist_papers/Hamilton'
+~ 'federalist_papers/Madison'.
+Each directory contain known texts from the respective author.
+There are 20 Hamilton text files and 14 Madison text files; we reduced the size of Hamilton text files from 51 to 20 because of simplicity of debugging and quicker runtime.
 
 ## Rejected Features / Pre-Processing Techniques
-For pre-processing, we decided not to use N-Grams in our project. The results we got were inaccurate when initially using N-Grams due to our program never returning any true string comparisons between the features and the data set.
-
-We did not reject any features.
+For pre-processing, we decided not to use N-Grams in our project. The results we got were inaccurate when initially using N-Grams due to our program never returning any true string comparisons between the features and the data set. Instead, we implemented the removal of stop-words from both the training and testing texts using the nltk library.
 
 ## Overall Accuracy of Model
-When we ran the model with the original amount of data (51 Hamilton texts, 14 Madison texts, 5 Jay texts), the results were skewed towards Hamilton, even when using a majority of features from other authors.  We reduced the amount of Hamilton texts to 20 files and removed Jay entirely. After that, we ended up receiving more accurate representations when testing with our debugging set.
-
+When we ran the model with the original amount of data (51 Hamilton texts, 14 Madison texts, 5 Jay texts), the results were skewed towards Hamilton, even when using a majority of features from other authors; however, that was because we multiplied P(Author) to each P(word|Author) that existed in the disputed text causing a bias towards the Hamilton text files since there are more Hamilton text files.  We reduced the amount of Hamilton texts to 20 files and removed Jay entirely. Though it was when we edited the Naive Bayes algorithm to have the log of P(Author) only added to the final log of P(disputed text|Author) rather than each log of (word Author) that the classifications of the disputed files became substantially more accurate and the debugging set, correct.
