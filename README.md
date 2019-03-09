@@ -5,11 +5,13 @@
 1. Directory of Hamilton texts: federalist_papers/Hamilton
 2. Directory of Madison texts: federalist_papers/Madison
 3. Directory of Disputed texts: federalist_papers/Disputed
-
+The directories have to be in this order: Hamilson, Madison, and Disputed.
 Example script:
 ```
 python main.py federalist_papers/Hamilton federalist_papers/Madison federalist_papers/Disputed
 ```
+## Modifying Debugging set
+To modify the debugging set, the first option is to manipulate the sub-directories within the existing debugging_data directory so that each of the sub_directories (Hamilton, Madison, then Disputed in order) has the desired text files. The second option is to use a different directory that contains three sub_directories (Hamilton, Madison, then Disputed in order) that respectively contain their own text files.
 
 ## Pre-Processing
 For preprocessing, we used the nltk library to remove pre-chosen stop words from the texts to be analyzed.
