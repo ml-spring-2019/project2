@@ -17,9 +17,7 @@ Each word in the filtered text then is stemmed using the nltk.stem.PorterStemmer
 Finally, each word in the resulting text is lower-cased.
 
 ## Trained Features
-The features the Naive Bayes model was trained over are
-~ 'federalist_papers/Hamilton'
-~ 'federalist_papers/Madison'.
+The features the Naive Bayes model was trained over are 'federalist_papers/Hamilton' and 'federalist_papers/Madison'.
 Each directory contain known texts from the respective author.
 There are 20 Hamilton text files and 14 Madison text files; we reduced the size of Hamilton text files from 51 to 20 because of simplicity of debugging and quicker runtime.
 
