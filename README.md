@@ -4,8 +4,8 @@
 `main.py` takes in 3 arguments:
 1. Directory of Hamilton texts: federalist_papers/Hamilton
 2. Directory of Madison texts: federalist_papers/Madison
-3. Directory of Disputed texts: federalist_papers/Disputed.<br/>
-The directories have to be in this order: Hamilson, Madison, and Disputed.<br/>
+3. Directory of Disputed texts: federalist_papers/Disputed.<br/><br/>
+The directories have to be in this order: Hamilson, Madison, and Disputed.<br/><br/>
 Example script:
 ```
 python main.py federalist_papers/Hamilton federalist_papers/Madison federalist_papers/Disputed
