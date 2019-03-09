@@ -8,7 +8,7 @@
 
 Example script:
 ```
-python main.py federalist_papers/Hamilton federalist_papers/Madison federalist_papers/Disputed features.txt
+python main.py federalist_papers/Hamilton federalist_papers/Madison federalist_papers/Disputed
 ```
 
 ## Pre-Processing
