@@ -26,9 +26,6 @@ from nltk import ngrams
 hamilton_prob = 20.0/34.0
 madison_prob = 14.0/34.0
 
-# need to find the num of all the possible words (from all the texts in the Hamilton, Jay, Madison, and Disputed texts)
-possible_words = 0
-
 def main(argv, argc):
     if (argc != 4):
         print("python main.py <Hamilton-dir> <Madison-dir> <Disputed-dir>")
@@ -36,7 +33,7 @@ def main(argv, argc):
 
 #   training_set: [[hamilton set] [jay set] [madison set]]
 #   testing_set: [disputed set]
-    training_set, testing_set = file_IO(argv)
+    training_set, testing_set, disputed_possible_words, author_directories = file_IO(argv)
 
 
 #   testing_set: list of testing_set
@@ -44,30 +41,22 @@ def main(argv, argc):
 #    testing_set = preprocessing(argv[4])
     bayes_scores = {}
 
-    print("Running Bayes Theorem with Hamilton Probability...")
-    bayes_scores["Hamilton"] = bayes_theorem_with_no_divisor(testing_set, training_set[0], hamilton_prob)
+    for i in range(len(testing_set)):
+        print("Analyzing: " + author_directories[2][i] + ":")
+#        print("Running Bayes Theorem with Hamilton Probability...")
+        bayes_scores["Hamilton"] = bayes_theorem_with_no_divisor(testing_set[i], training_set[0], hamilton_prob, disputed_possible_words[i])
 
-    print("Running Bayes Theorem with Madison Probability...")
-    bayes_scores["Madison"] = bayes_theorem_with_no_divisor(testing_set, training_set[1], madison_prob)
+#        print("Running Bayes Theorem with Madison Probability...")
+        bayes_scores["Madison"] = bayes_theorem_with_no_divisor(testing_set[i], training_set[1], madison_prob, disputed_possible_words[i])
 
-    print_results(bayes_scores)
-
-
-def get_testing_set(filename):
-    testing_set = []
-    testing_set_file = open(filename, 'r')
-    for line in testing_set_file.readlines():
-        f = line.rstrip("\n")
-        testing_set.append(f)
-    return testing_set
-
+        print_results(bayes_scores)
 
 def print_results(bayes_scores):
     print("Bayes scores:")
     for k in bayes_scores.keys():
         print(k + ":     \t" + str(bayes_scores[k]))
 
-    print("The author of the unknown classification is probably: " + get_author_with_highest_prob(bayes_scores) + ".")
+    print("The author of the unknown classification is probably: " + get_author_with_highest_prob(bayes_scores) + ".\n\n")
 
 
 def get_author_with_highest_prob(bayes_scores):
@@ -115,13 +104,13 @@ def remove_stop_words(contents):
 # testing_set: string list of testing_set
 # text: string list of the text
 # author_prob: priori probability of text being the current author's
-def bayes_theorem_with_no_divisor(testing_set, text, author_prob):
+def bayes_theorem_with_no_divisor(testing_file, text, author_prob, possible_words):
     text_length = float(len(text))
     cond_prob = 0.0
     smoothing_value = 1.0
     # find the conditional probability with each feature using bayes' theorem that applies Laplace smoothing
     # multiply each feature's probability with each other
-    for feature in testing_set:
+    for feature in testing_file:
         feature_count = float(text.count(feature))
         # Bayes' theorem applied with Laplace smoothing
 
@@ -136,11 +125,12 @@ def bayes_theorem_with_no_divisor(testing_set, text, author_prob):
     return cond_prob
 
 def file_IO(argv):
-    print("Performing file I/O...")
+    print("Performing file I/O...\n\n")
+    
     author_directories = []
     for i in range(1, len(argv)):
         author_directories.append(glob.glob(argv[i]+"/*.txt"))
-
+    
     training_set = [[],[]]
     testing_set = []
     i = 0
@@ -151,20 +141,22 @@ def file_IO(argv):
             if i < len(author_directories)-1:
                 training_set[i] += (preprocessing(text_file))
             else:
-                testing_set += (preprocessing(text_file))
+                testing_set.append(preprocessing(text_file))
         i += 1
 
-    distinct_words = list(set(testing_set))
+    distinct_words = []
 
     for collection in training_set:
         distinct_words += list(set(collection))
 
     distinct_words = list(set(distinct_words))
 
-    global possible_words
-    possible_words += len(distinct_words)
+    disputed_possible_words = {}
 
-    return training_set, testing_set
+    for i in range(len(author_directories[2])):
+        disputed_possible_words[i] = len(list(set(testing_set[i]+distinct_words)))
+
+    return training_set, testing_set, disputed_possible_words, author_directories
 
 
 def file_data_to_string(file):
